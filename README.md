@@ -31,21 +31,27 @@ AZ-900 Compass is an unofficial AI-powered readiness coach that helps Azure Fund
 
 ## Team
 
-- Alex: Product Lead & Repository Manager
+- Alex: Product Lead & Repository Manager (@A1-lex)
 - Grace: Frontend & UX Lead
-- Vee: AI & Prompt Engineering Lead
-- Kelly: AZ-900 Content & Quality Lead
-- Gilton: Backend, Scoring & Data Lead
+- Vee: AI & Prompt Engineering Lead (@Veekilonzi)
+- Kelly: AZ-900 Content & Quality Lead (@kellywanjiruu)
+- Gilton: Backend, Scoring & Data Lead (@chipukizii)
 
 ## Documentation
 
 - [Project plan](docs/PROJECT_PLAN.md)
 - [Product requirements](docs/PRD.md)
 - [Integration contracts](docs/CONTRACTS.md)
+- [Backend integration guide](docs/INTEGRATION_GUIDE.md)
+- [Database ERD](docs/ERD.md)
 
 ## Local Setup
 
-Setup instructions will be added when the application stack is committed.
+### Running Backend Tests
+Verify the scoring engine and contracts:
+```bash
+node backend/scoring/scoringEngine.test.js
+```
 
 ## Contribution Workflow
 
