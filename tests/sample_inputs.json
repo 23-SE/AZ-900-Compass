@@ -1,0 +1,56 @@
+{
+  "coach_correct_answer": {
+    "overallScore": 75,
+    "topicScores": [
+      {
+        "topicLabel": "Describe cloud concepts",
+        "score": 80
+      }
+    ],
+    "weakAreas": [
+      "Describe Azure management and governance"
+    ],
+    "incorrectAnswers": []
+  },
+  "coach_incorrect_answer": {
+    "overallScore": 75,
+    "topicScores": [
+      {
+        "topicLabel": "Describe Azure management and governance",
+        "score": 50
+      }
+    ],
+    "weakAreas": [
+      "Describe Azure management and governance"
+    ],
+    "incorrectAnswers": [
+      {
+        "questionId": "q007",
+        "question": "Which service helps enforce organisational rules on Azure resources?",
+        "selectedAnswer": "Azure Advisor",
+        "correctAnswer": "Azure Policy",
+        "referenceExplanation": "Azure Policy helps create, assign, and manage rules that enforce organisational standards on resources."
+      }
+    ]
+  },
+  "study_plan_valid": {
+    "examDate": "2026-10-30",
+    "availableHours": 6,
+    "weakAreas": [
+      "Describe Azure management and governance"
+    ],
+    "topicScores": [
+      {
+        "topicLabel": "Describe Azure management and governance",
+        "score": 50
+      }
+    ]
+  },
+  "study_plan_missing_exam_date": {
+    "availableHours": 6,
+    "weakAreas": [
+      "Describe Azure management and governance"
+    ],
+    "topicScores": []
+  }
+}

@@ -1,0 +1,54 @@
+
+{
+  "coach_success": {
+    "summary": "You have a good foundation in cloud concepts. Focus your next revision session on Azure management and governance.",
+    "priorityTopics": [
+      "Describe Azure management and governance"
+    ],
+    "recommendations": [
+      "Review Azure Policy and how it helps enforce organisational standards.",
+      "Study resource locks and how they help protect Azure resources.",
+      "Practise original questions about Azure management and governance."
+    ],
+    "answerExplanations": [
+      {
+        "questionId": "q007",
+        "explanation": "Azure Policy helps enforce organisational rules on Azure resources. Azure Advisor provides recommendations for improving Azure deployments."
+      }
+    ]
+  },
+  "study_plan_success": {
+    "summary": "Prioritise Azure management and governance, then review other topics.",
+    "sessions": [
+      {
+        "date": "2026-10-24",
+        "durationMinutes": 60,
+        "topic": "Describe Azure management and governance",
+        "activities": [
+          "Review Azure Policy and resource locks.",
+          "Complete original practice questions and review the explanations."
+        ]
+      },
+      {
+        "date": "2026-10-25",
+        "durationMinutes": 60,
+        "topic": "Describe cloud concepts",
+        "activities": [
+          "Review the key cloud concepts.",
+          "Practise original questions and revisit mistakes."
+        ]
+      }
+    ],
+    "finalReview": [
+      "Retry previously incorrect questions.",
+      "Review remaining weak areas."
+    ]
+  },
+  "invalid_input": {
+    "success": false,
+    "error": {
+      "code": "INVALID_INPUT",
+      "message": "Please provide a valid future exam date and positive available study hours."
+    }
+  }
+}
