@@ -305,6 +305,7 @@ function buildAICoachRequest(scoringResult, questions) {
       const selectedOption = question.options.find((o) => o.id === r.selectedOptionId);
       const correctOption = question.options.find((o) => o.id === r.correctOptionId);
       return {
+        questionId: r.questionId,
         question: question.question,
         selectedAnswer: selectedOption ? selectedOption.text : "No answer selected",
         correctAnswer: correctOption.text,

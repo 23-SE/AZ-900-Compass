@@ -381,10 +381,11 @@ test("buildAICoachRequest: output has all contract keys", () => {
   hasKey(ai, "weakAreas");
   hasKey(ai, "incorrectAnswers");
 });
-test("buildAICoachRequest: incorrectAnswers contains question text not IDs", () => {
+test("buildAICoachRequest: incorrectAnswers contains questionId, question text, and explanations", () => {
   const r = scoreQuiz(skewedSub, MOCK_QUESTIONS);
   const ai = buildAICoachRequest(r, MOCK_QUESTIONS);
   for (const ia of ai.incorrectAnswers) {
+    hasKey(ia, "questionId");
     hasKey(ia, "question");
     hasKey(ia, "selectedAnswer");
     hasKey(ia, "correctAnswer");

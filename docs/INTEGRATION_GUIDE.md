@@ -102,6 +102,7 @@ const aiPayload = buildAICoachRequest(result, questions);
 //   weakAreas: ['Describe Azure management and governance'],
 //   incorrectAnswers: [
 //     {
+//       questionId: 'q007',
 //       question: 'Full question text',
 //       selectedAnswer: 'The incorrect text option learner chose',
 //       correctAnswer: 'The correct text option',
