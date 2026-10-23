@@ -381,7 +381,16 @@ test("buildAICoachRequest: output has all contract keys", () => {
   hasKey(ai, "weakAreas");
   hasKey(ai, "incorrectAnswers");
 });
-test("buildAICoachRequest: incorrectAnswers contains questionId, question text, and explanations", () => {
+test("buildAICoachRequest: incorrectAnswers includes questionId on each item", () => {
+  const r = scoreQuiz(skewedSub, MOCK_QUESTIONS);
+  const ai = buildAICoachRequest(r, MOCK_QUESTIONS);
+  eq(ai.incorrectAnswers.length > 0, true);
+  for (const ia of ai.incorrectAnswers) {
+    hasKey(ia, "questionId");
+    eq(typeof ia.questionId, "string");
+  }
+});
+test("buildAICoachRequest: incorrectAnswers contains question text and explanations", () => {
   const r = scoreQuiz(skewedSub, MOCK_QUESTIONS);
   const ai = buildAICoachRequest(r, MOCK_QUESTIONS);
   for (const ia of ai.incorrectAnswers) {
