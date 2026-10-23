@@ -37,34 +37,34 @@
 
 ## Presentation
 
-- [ ] Official Canva template is used.
-- [ ] Problem is linked to the team's own AZ-900 learning journey.
-- [ ] Target users are clear.
-- [ ] Product screenshots are current.
-- [ ] Prompt-engineering safeguards are explained.
-- [ ] Deterministic scoring is distinguished from AI coaching.
-- [ ] Automatic fallback is demonstrated or explained.
-- [ ] Impact and scalability are covered.
-- [ ] Team contributions are shown.
-- [ ] Live demo and GitHub links are included.
-- [ ] Unofficial-tool disclaimer is included.
+- [x] Official Canva template is used.
+- [x] Problem is linked to the team's own AZ-900 learning journey.
+- [x] Target users are clear.
+- [x] Product screenshots are current.
+- [x] Prompt-engineering safeguards are explained.
+- [x] Deterministic scoring is distinguished from AI coaching.
+- [x] Automatic fallback is demonstrated or explained.
+- [x] Impact and scalability are covered.
+- [x] Team contributions are shown.
+- [x] Live demo and GitHub links are included.
+- [x] Unofficial-tool disclaimer is included.
 
 ## Demo
 
-- [ ] Presenter has rehearsed the 3-minute script.
-- [ ] A completed results tab is open as backup.
-- [ ] A future exam date and available-hours value are ready.
-- [ ] Internet connection is checked.
-- [ ] Demo browser notifications and unrelated tabs are closed.
-- [ ] Fallback explanation is ready if the AI provider is unavailable.
+- [x] Presenter has rehearsed the 3-minute script.
+- [x] A completed results tab is open as backup.
+- [x] A future exam date and available-hours value are ready.
+- [x] Internet connection is checked.
+- [x] Demo browser notifications and unrelated tabs are closed.
+- [x] Fallback explanation is ready if the AI provider is unavailable.
 
 ## Submission
 
-- [ ] Submission form/link from the Concept Note is open.
-- [ ] Team and project names use consistent spelling.
-- [ ] GitHub repository link is correct.
-- [ ] Production demo link is correct.
-- [ ] Official Canva presentation link/file is correct.
-- [ ] All required form fields are completed.
-- [ ] Submission is made before Friday, 23 October 2026 at 11:59 PM EAT.
-- [ ] Confirmation page or receipt is saved as evidence.
+- [x] Submission form/link from the Concept Note is open.
+- [x] Team and project names use consistent spelling.
+- [x] GitHub repository link is correct.
+- [x] Production demo link is correct.
+- [x] Official Canva presentation link/file is correct.
+- [x] All required form fields are completed.
+- [x] Submission is made before Friday, 23 October 2026 at 11:59 PM EAT.
+- [x] Confirmation page or receipt is saved as evidence.
