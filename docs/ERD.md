@@ -162,15 +162,14 @@ Stores the AI-generated study plan. `sessions` is a JSONB array of StudySession 
 
 ---
 
-## Supabase Row-Level Security (RLS) Policy
+## Supabase Row-Level Security (RLS) — Demo-Only Public Persistence
 
-Since there is no authentication in the MVP, all tables use a **public insert + select by attempt_id** policy:
+As specified in `docs/PRD.md §10`, user authentication and user accounts are strictly out of scope for the MVP.
 
-- Anyone may INSERT with any `attempt_id`.
-- Anyone may SELECT rows where `attempt_id` matches the value they supply.
-- No UPDATE or DELETE is permitted.
-
-This prevents one anonymous learner from reading another learner's results.
+Consequently, the Supabase database implements **Demo-Only Public Persistence**:
+- **INSERT & SELECT:** Open to anonymous clients (`TO anon WITH CHECK (true)` and `USING (true)`). This allows the frontend application, evaluators, and judges to run the full assessment journey, store attempts, and query the `result_summary` view by `attempt_id` without requiring an account or login session.
+- **UPDATE & DELETE:** Prohibited (no policies granted to `anon`). Attempt records, scores, and AI recommendations cannot be altered or removed after submission.
+- **Production Architecture:** In a production deployment with Supabase Auth, these policies would be restricted to authenticated user sessions matching `auth.uid() = user_id`.
 
 ---
 

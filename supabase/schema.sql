@@ -105,9 +105,16 @@ CREATE INDEX IF NOT EXISTS idx_ai_coach_attempt            ON ai_coach_responses
 CREATE INDEX IF NOT EXISTS idx_study_plan_req_attempt      ON study_plan_requests(quiz_attempt_id);
 
 -- ============================================================
--- ROW-LEVEL SECURITY (RLS)
--- No user auth in MVP. Policy: anyone can insert or select
--- by matching attempt_id. No updates or deletes allowed.
+-- ROW-LEVEL SECURITY (RLS) — DEMO-ONLY PUBLIC PERSISTENCE
+-- As specified in docs/PRD.md §10, user authentication is out of
+-- scope for the MVP.
+--
+-- Therefore, policies use `USING (true)` to allow anonymous reads
+-- and inserts for demo assessment sessions without login friction.
+-- No UPDATE or DELETE policies are granted to protect submitted data.
+--
+-- In production with authentication, policies would restrict access
+-- to authenticated sessions matching `auth.uid() = user_id`.
 -- ============================================================
 
 ALTER TABLE quiz_attempts      ENABLE ROW LEVEL SECURITY;

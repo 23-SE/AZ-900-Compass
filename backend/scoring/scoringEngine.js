@@ -190,9 +190,8 @@ function scoreQuiz(submission, questions) {
   );
 
   // ── Step 3: Score individual answers ─────────────────────────────────────
-  // Only questions that the learner actually answered are scored
-  const scoredQuestions = questions.filter((q) => answerMap.has(q.id));
-  const totalAnswered = scoredQuestions.length;
+  // Scored against the complete quiz to prevent inflated readiness scores
+  const totalQuestions = questions.length;
   let totalCorrect = 0;
 
   const answerResults = [];
@@ -214,16 +213,17 @@ function scoreQuiz(submission, questions) {
   }
 
   // ── Step 4: Overall score ─────────────────────────────────────────────────
+  // Scored against complete quiz length so unanswered questions receive 0 credit
   const overallScore =
-    totalAnswered > 0
-      ? roundScore((totalCorrect / totalAnswered) * 100)
+    totalQuestions > 0
+      ? roundScore((totalCorrect / totalQuestions) * 100)
       : 0;
 
   const readinessLabel = getReadinessLabel(overallScore);
 
   // ── Step 5: Topic-level scores ────────────────────────────────────────────
-  // Collect all unique topics from the full question bank
-  const topicMeta = new Map(); // topic → { topicLabel, total, correct }
+  // Each topic is scored against all questions in that topic across the complete quiz
+  const topicMeta = new Map(); // topic → { topicLabel, totalQuestions, correctAnswers }
 
   for (const question of questions) {
     if (!topicMeta.has(question.topic)) {
@@ -234,21 +234,20 @@ function scoreQuiz(submission, questions) {
       });
     }
     const entry = topicMeta.get(question.topic);
+    entry.totalQuestions++;
 
     const selectedOptionId = answerMap.get(question.id);
-    if (selectedOptionId !== undefined) {
-      // Only count topics where the learner provided at least one answer
-      entry.totalQuestions++;
-      if (selectedOptionId === question.correctOptionId) {
-        entry.correctAnswers++;
-      }
+    if (selectedOptionId !== undefined && selectedOptionId === question.correctOptionId) {
+      entry.correctAnswers++;
     }
   }
 
   const topicScores = [];
   for (const [topic, meta] of topicMeta) {
-    if (meta.totalQuestions === 0) continue; // skip unattempted topics
-    const score = roundScore((meta.correctAnswers / meta.totalQuestions) * 100);
+    const score =
+      meta.totalQuestions > 0
+        ? roundScore((meta.correctAnswers / meta.totalQuestions) * 100)
+        : 0;
     topicScores.push({
       topic,
       topicLabel: meta.topicLabel,
@@ -273,7 +272,7 @@ function scoreQuiz(submission, questions) {
     overallScore,
     readinessLabel,
     correctAnswers: totalCorrect,
-    totalQuestions: totalAnswered,
+    totalQuestions,
     topicScores,
     strengths,
     weakAreas,

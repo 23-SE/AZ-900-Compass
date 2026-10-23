@@ -151,7 +151,7 @@ Alex, all backend criteria from the PRD, CONTRACTS.md, and CONTRIBUTING.md are s
 ## 6. Frequently Asked Questions (Self-Service)
 
 **Q: What if the learner does not answer all questions?**  
-A: The scoring engine handles partial submissions gracefully. Unanswered questions are given `selectedOptionId: null`. The overall score is calculated as `(correctAnswered / totalAnswered) * 100`.
+A: The scoring engine handles partial submissions gracefully without inflating readiness. Unanswered questions receive 0 credit (`selectedOptionId: null`), and the score is calculated against the complete quiz length (`(correctAnswers / totalQuestionsInBank) * 100`) so 1 correct answer out of 1 attempted does not produce an artificial 100% score.
 
 **Q: What are the readiness labels and score cutoffs?**  
 - **Score ≥ 85:** `"Ready"`

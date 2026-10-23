@@ -238,20 +238,28 @@ test("Skewed: topicScore for identity-security = 0", () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// SUITE 5 — Partial Submission (unanswered questions excluded from scoring)
-// Learner answers only q001 (correct) and q004 (wrong) → 1/2 = 50%
+// SUITE 5 — Partial Submission (scored against complete quiz length)
+// Learner answers only q001 (correct) and q004 (wrong) → 1/6 = 17%
+// Prevents inflated scores (e.g. 1/1 != 100%)
 // ─────────────────────────────────────────────────────────────────────────────
-console.log("\n📋 Suite 5: Partial Submission (unanswered questions)");
+console.log("\n📋 Suite 5: Partial Submission (scored against complete quiz)");
 
 const partialSub = makeSubmission([["q001", "a"], ["q004", "a"]]);
 
-test("Partial: totalQuestions = 2 (only answered)", () => {
+test("Partial: totalQuestions reflects complete quiz length (6)", () => {
   const r = scoreQuiz(partialSub, MOCK_QUESTIONS);
-  eq(r.totalQuestions, 2);
+  eq(r.totalQuestions, 6);
 });
-test("Partial: overallScore = 50 (1 correct of 2 answered)", () => {
+test("Partial: overallScore = 17 (1 correct of 6 complete questions, not inflated)", () => {
   const r = scoreQuiz(partialSub, MOCK_QUESTIONS);
-  eq(r.overallScore, 50);
+  eq(r.overallScore, 17);
+  eq(r.readinessLabel, "Keep Studying");
+});
+test("Partial: 1 correct out of 1 attempted scores 17%, NOT inflated 100%", () => {
+  const singleAnswerSub = makeSubmission([["q001", "a"]]);
+  const r = scoreQuiz(singleAnswerSub, MOCK_QUESTIONS);
+  eq(r.overallScore, 17);
+  eq(r.readinessLabel, "Keep Studying");
 });
 test("Partial: answerResults has entry for ALL bank questions (6)", () => {
   const r = scoreQuiz(partialSub, MOCK_QUESTIONS);
