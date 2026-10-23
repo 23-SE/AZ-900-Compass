@@ -1,22 +1,42 @@
-# AZ-900 Compass — Backend Integration Guide
+# AZ-900 Compass — Backend Integration & Team Handoff Guide
 > **Owner:** Gilton (Backend, Scoring & Data Lead)  
-> **Audience:** Grace (Frontend Lead), Vee (AI Lead), Alex (Product Lead)  
-> **Status:** ✅ Ready for Integration
+> **Audience:** Alex (Product Lead), Grace (Frontend Lead), Vee (AI Lead), Kelly (Content Lead)  
+> **Status:** ✅ Complete, Fully Tested & Verified Live  
 
 ---
 
-## 1. Quick Overview
+## 1. Quick Overview & Verification
 
-All backend & data deliverables are complete and tested:
+All backend & data deliverables are complete, verified against the official contracts, and ready for integration:
 - **Scoring Engine:** Deterministic, zero AI dependency, 44/44 unit tests passing.
 - **Data Models & Schema:** Supabase database live with tables, RLS policies, and performance indexes.
 - **Client Library:** [`backend/db/supabaseClient.js`](../backend/db/supabaseClient.js) works with standard browser/Node `fetch` (zero npm dependencies).
 
+### Run Tests Anytime (Zero Setup Required)
+```powershell
+# 1. Run the 44 unit & contract tests:
+node backend/scoring/scoringEngine.test.js
+
+# 2. Run the live Supabase database verification:
+node backend/db/testSupabaseClient.js
+```
+
 ---
 
-## 2. Instructions for Grace (Frontend)
+## 2. Instructions for Grace (Frontend & UX Lead)
 
-### A. How to Score a Quiz
+Grace, you do not need to write any math or scoring algorithms. Everything is ready to import.
+
+### A. Question Bank (`data/questions.json`)
+The file contains 20 multiple-choice questions. Each question has:
+- `id`: Unique identifier (e.g., `"q001"`)
+- `topic`: Domain slug (`"cloud-concepts"`, `"azure-architecture"`, `"azure-governance"`)
+- `topicLabel`: Display name for headings (e.g., `"Describe cloud concepts"`)
+- `question`: The text of the question
+- `options`: Array of 4 options with `id` (`"a"`, `"b"`, `"c"`, `"d"`) and `text`
+- `explanation`: Official reference explanation for learning
+
+### B. How to Score a Quiz
 ```javascript
 const { scoreQuiz } = require('./backend/scoring/scoringEngine'); // or ES import
 const questions = require('./data/questions.json');
@@ -37,9 +57,10 @@ console.log(result.readinessLabel);  // "Ready" | "Nearly Ready" | "Making Progr
 console.log(result.topicScores);     // [{ topicLabel, score, correctAnswers, totalQuestions }]
 console.log(result.strengths);       // ['Describe cloud concepts', ...]
 console.log(result.weakAreas);       // ['Describe Azure management and governance', ...]
+console.log(result.answerResults);   // Per-question correctness, user's choice, & explanation
 ```
 
-### B. How to Save & Fetch from Supabase
+### C. How to Save & Fetch from Supabase
 ```javascript
 const { SupabaseClient } = require('./backend/db/supabaseClient');
 
@@ -48,7 +69,7 @@ const db = new SupabaseClient({
   supabaseKey: process.env.SUPABASE_ANON_KEY
 });
 
-// 1. Save attempt & score when user finishes quiz:
+// 1. Save attempt & score when user finishes quiz (saves attempt, answers & scores in 1 shot):
 await db.saveQuizSession({
   attemptId: submission.attemptId,
   startedAt: startTimeISO,
@@ -64,7 +85,9 @@ const summary = await db.getResultSummary(submission.attemptId);
 
 ---
 
-## 3. Instructions for Vee (AI & Prompt Engineering)
+## 3. Instructions for Vee (AI & Prompt Engineering Lead)
+
+Vee, your AI prompt inputs are isolated and prepared by the backend so AI never needs to calculate scores, parse raw option IDs, or perform math.
 
 ### A. Preparing Context for AI Coach
 Use the contract helper so AI never handles raw calculations:
@@ -72,14 +95,23 @@ Use the contract helper so AI never handles raw calculations:
 const { buildAICoachRequest } = require('./backend/scoring/scoringEngine');
 
 const aiPayload = buildAICoachRequest(result, questions);
-// aiPayload contains:
-// - overallScore
-// - topicScores
-// - weakAreas
-// - incorrectAnswers: [{ question, selectedAnswer, correctAnswer, referenceExplanation }]
+// aiPayload matches your exact prompt contract:
+// {
+//   overallScore: 65,
+//   topicScores: [{ topicLabel: '...', score: 70 }],
+//   weakAreas: ['Describe Azure management and governance'],
+//   incorrectAnswers: [
+//     {
+//       question: 'Full question text',
+//       selectedAnswer: 'The incorrect text option learner chose',
+//       correctAnswer: 'The correct text option',
+//       referenceExplanation: 'Reference explanation from official guide'
+//     }
+//   ]
+// }
 ```
 
-### B. Saving AI Coach Output
+### B. Saving AI Coach Output to Supabase
 ```javascript
 await db.saveAICoachResponse(attemptId, {
   summary: "Great job on cloud fundamentals! Revise Azure governance locks.",
@@ -90,13 +122,46 @@ await db.saveAICoachResponse(attemptId, {
 
 ---
 
-## 4. Verification & Testing
+## 4. Instructions for Kelly (AZ-900 Content & Quality Lead)
 
-To test the backend locally at any time:
-```powershell
-# Run the 44 unit & contract tests
-node backend/scoring/scoringEngine.test.js
+Kelly, the question bank is stored in [`data/questions.json`](../data/questions.json).
 
-# Run live Supabase database verification
-node backend/db/testSupabaseClient.js
-```
+- It contains **20 original questions** structured across Microsoft’s 3 AZ-900 domains:
+  1. `cloud-concepts`: **6 questions** (~25–30% exam weighting)
+  2. `azure-architecture`: **7 questions** (~35–40% exam weighting)
+  3. `azure-governance`: **7 questions** (~30–35% exam weighting)
+- **Adding or modifying questions:**
+  - Make sure `correctOptionId` matches one of the option IDs (`"a"`, `"b"`, `"c"`, or `"d"`).
+  - All questions use `topicLabel` for UI category headings.
+
+---
+
+## 5. Instructions for Alex (Product Lead & Repo Manager)
+
+Alex, all backend criteria from the PRD, CONTRACTS.md, and CONTRIBUTING.md are satisfied:
+
+1. **GitHub Branch:** `feature/scoring-logic` pushed and ready for PR merge.
+2. **Commit Standard:** Every commit follows the rules (`content:`, `feat:`, `docs:`).
+3. **Security:** No API keys, credentials, or `.env` files were tracked or committed.
+4. **Reliability:** Scoring logic is 100% deterministic and decoupled from AI.
+5. **ERD Documented:** Full database architecture and JSONB structures documented in [`docs/ERD.md`](./ERD.md).
+
+---
+
+## 6. Frequently Asked Questions (Self-Service)
+
+**Q: What if the learner does not answer all questions?**  
+A: The scoring engine handles partial submissions gracefully. Unanswered questions are given `selectedOptionId: null`. The overall score is calculated as `(correctAnswered / totalAnswered) * 100`.
+
+**Q: What are the readiness labels and score cutoffs?**  
+- **Score ≥ 85:** `"Ready"`
+- **Score ≥ 70:** `"Nearly Ready"`
+- **Score ≥ 50:** `"Making Progress"`
+- **Score < 50:** `"Keep Studying"`
+
+**Q: What defines a strength vs. a weak area?**  
+- A topic score **≥ 75%** is categorized as a **strength**.
+- A topic score **< 75%** is categorized as a **weak area**.
+
+**Q: Do we need to run `npm install` for the scoring engine?**  
+A: No! The scoring engine, test suite, and Supabase client use standard built-in Node.js / JavaScript (zero external dependencies).
