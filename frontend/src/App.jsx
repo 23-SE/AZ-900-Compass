@@ -19,11 +19,39 @@ function App() {
   const [coachLoading, setCoachLoading] = useState(false);
   const [planSource, setPlanSource] = useState("fallback");
   const [planLoading, setPlanLoading] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [navigationMessage, setNavigationMessage] = useState("");
 
   const answered = Object.keys(answers).length;
+  const currentQuestion = questions[currentQuestionIndex];
+  const isFirstQuestion = currentQuestionIndex === 0;
+  const isLastQuestion = currentQuestionIndex === questions.length - 1;
+  const currentAnswered = Boolean(answers[currentQuestion.id]);
+  const progressPercent = ((currentQuestionIndex + 1) / questions.length) * 100;
 
   function selectAnswer(questionId, optionId) {
     setAnswers((current) => ({ ...current, [questionId]: optionId }));
+    setNavigationMessage("");
+  }
+
+  function goPrevious() {
+    if (isFirstQuestion) return;
+    setCurrentQuestionIndex((index) => index - 1);
+    setNavigationMessage("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function goNext() {
+    if (!currentAnswered) {
+      setNavigationMessage("Choose an answer before continuing.");
+      return;
+    }
+
+    if (!isLastQuestion) {
+      setCurrentQuestionIndex((index) => index + 1);
+      setNavigationMessage("");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 
   function buildFallbackCoach(scoringResult) {
@@ -45,8 +73,18 @@ function App() {
   }
 
   function submitQuiz() {
+    if (!currentAnswered) {
+      setNavigationMessage("Choose an answer before submitting the diagnostic.");
+      return;
+    }
+
     if (answered !== questions.length) {
-      alert(`Please answer all ${questions.length} questions before submitting.`);
+      const firstUnansweredIndex = questions.findIndex((question) => !answers[question.id]);
+      if (firstUnansweredIndex >= 0) {
+        setCurrentQuestionIndex(firstUnansweredIndex);
+        setNavigationMessage("Please answer this question before submitting.");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
       return;
     }
 
@@ -93,6 +131,8 @@ function App() {
     setCoachLoading(false);
     setPlanSource("fallback");
     setPlanLoading(false);
+    setCurrentQuestionIndex(0);
+    setNavigationMessage("");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -194,9 +234,7 @@ function App() {
           <div>
             <span className="score">{result.overallScore}%</span>
             <h2>{result.readinessLabel}</h2>
-            <p>
-              {result.correctAnswers} of {result.totalQuestions} questions correct
-            </p>
+            <p>{result.correctAnswers} of {result.totalQuestions} questions correct</p>
           </div>
         </section>
 
@@ -207,9 +245,7 @@ function App() {
               <article key={topic.topic} className="card">
                 <h3>{topic.topicLabel}</h3>
                 <strong>{topic.score}%</strong>
-                <p>
-                  {topic.correctAnswers}/{topic.totalQuestions} correct
-                </p>
+                <p>{topic.correctAnswers}/{topic.totalQuestions} correct</p>
               </article>
             ))}
           </div>
@@ -219,11 +255,7 @@ function App() {
           <article className="card">
             <h2>Strengths</h2>
             {result.strengths.length ? (
-              <ul>
-                {result.strengths.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
+              <ul>{result.strengths.map((item) => <li key={item}>{item}</li>)}</ul>
             ) : (
               <p>Keep building. No topic has reached the strength threshold yet.</p>
             )}
@@ -232,11 +264,7 @@ function App() {
           <article className="card">
             <h2>Priority revision</h2>
             {result.weakAreas.length ? (
-              <ul>
-                {result.weakAreas.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
+              <ul>{result.weakAreas.map((item) => <li key={item}>{item}</li>)}</ul>
             ) : (
               <p>No weak areas were identified in this diagnostic.</p>
             )}
@@ -255,11 +283,7 @@ function App() {
             </p>
             <p>{coachFeedback?.summary}</p>
             {coachFeedback?.recommendations?.length > 0 && (
-              <ul>
-                {coachFeedback.recommendations.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
+              <ul>{coachFeedback.recommendations.map((item) => <li key={item}>{item}</li>)}</ul>
             )}
           </article>
         </section>
@@ -269,11 +293,7 @@ function App() {
           <div className="card form-grid">
             <label>
               Planned exam date
-              <input
-                type="date"
-                value={examDate}
-                onChange={(event) => setExamDate(event.target.value)}
-              />
+              <input type="date" value={examDate} onChange={(event) => setExamDate(event.target.value)} />
             </label>
             <label>
               Total hours available
@@ -300,30 +320,17 @@ function App() {
               </p>
               <p>{studyPlan.summary}</p>
               {studyPlan.sessions.map((session, index) => (
-                <article
-                  key={`${session.date}-${session.topic}-${index}`}
-                  className="session"
-                >
+                <article key={`${session.date}-${session.topic}-${index}`} className="session">
                   <h3>{session.topic}</h3>
-                  <p>
-                    {session.date} · {session.durationMinutes} minutes
-                  </p>
-                  <ul>
-                    {session.activities.map((activity) => (
-                      <li key={activity}>{activity}</li>
-                    ))}
-                  </ul>
+                  <p>{session.date} · {session.durationMinutes} minutes</p>
+                  <ul>{session.activities.map((activity) => <li key={activity}>{activity}</li>)}</ul>
                 </article>
               ))}
 
               {studyPlan.finalReview?.length > 0 && (
                 <>
                   <h3>Final review</h3>
-                  <ul>
-                    {studyPlan.finalReview.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
+                  <ul>{studyPlan.finalReview.map((item) => <li key={item}>{item}</li>)}</ul>
                 </>
               )}
             </div>
@@ -334,21 +341,12 @@ function App() {
           <h2>Answer review</h2>
           <div className="answer-list">
             {result.answerResults.map((answer) => {
-              const question = questions.find(
-                (item) => item.id === answer.questionId
-              );
-              const selected = question.options.find(
-                (option) => option.id === answer.selectedOptionId
-              );
-              const correct = question.options.find(
-                (option) => option.id === answer.correctOptionId
-              );
+              const question = questions.find((item) => item.id === answer.questionId);
+              const selected = question.options.find((option) => option.id === answer.selectedOptionId);
+              const correct = question.options.find((option) => option.id === answer.correctOptionId);
 
               return (
-                <article
-                  key={answer.questionId}
-                  className={`card answer ${answer.isCorrect ? "correct" : "incorrect"}`}
-                >
+                <article key={answer.questionId} className={`card answer ${answer.isCorrect ? "correct" : "incorrect"}`}>
                   <h3>{question.question}</h3>
                   <strong>{answer.isCorrect ? "Correct" : "Needs review"}</strong>
                   <p>Your answer: {selected?.text ?? "No answer"}</p>
@@ -360,72 +358,98 @@ function App() {
           </div>
         </section>
 
-        <button type="button" className="secondary" onClick={restartQuiz}>
-          Retake diagnostic
-        </button>
+        <button type="button" className="secondary" onClick={restartQuiz}>Retake diagnostic</button>
         <footer>
-          Unofficial AZ-900 preparation tool · Not affiliated with or endorsed by
-          Microsoft.
+          Unofficial AZ-900 preparation tool · Not affiliated with or endorsed by Microsoft.
         </footer>
       </main>
     );
   }
 
   return (
-    <main>
-      <header>
+    <main className="diagnostic-main">
+      <header className="diagnostic-intro">
         <p className="eyebrow">AZ-900 COMPASS</p>
         <h1>Know what to study next.</h1>
-        <p>
-          Complete the diagnostic to reveal your topic strengths, weak areas and
-          readiness.
-        </p>
+        <p>Complete the diagnostic to reveal your topic strengths, weak areas and readiness.</p>
         <small>Unofficial AZ-900 preparation tool</small>
       </header>
 
-      <section>
-        <div className="progress-row">
-          <strong>Diagnostic</strong>
-          <span>
-            {answered}/{questions.length} answered
+      <section className="diagnostic-shell">
+        <div className="diagnostic-progress" aria-label="Diagnostic progress">
+          <div className="progress-row">
+            <div>
+              <strong>Diagnostic</strong>
+              <span className="progress-topic">{currentQuestion.topicLabel}</span>
+            </div>
+            <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
+          </div>
+          <div className="progress-track" aria-hidden="true">
+            <span style={{ width: `${progressPercent}%` }} />
+          </div>
+          <div className="progress-caption">
+            <span>{answered} answered</span>
+            <span>{questions.length - answered} remaining</span>
+          </div>
+        </div>
+
+        <article className="card question-card single-question-card">
+          <span className="question-meta">
+            Question {currentQuestionIndex + 1} · {currentQuestion.topicLabel}
           </span>
-        </div>
-        <progress value={answered} max={questions.length} />
+          <h2>{currentQuestion.question}</h2>
 
-        <div className="answer-list">
-          {questions.map((question, index) => (
-            <article key={question.id} className="card question-card">
-              <span className="question-meta">
-                Question {index + 1} · {question.topicLabel}
-              </span>
-              <h2>{question.question}</h2>
-              <div className="options">
-                {question.options.map((option) => (
-                  <label
-                    key={option.id}
-                    className={
-                      answers[question.id] === option.id
-                        ? "option selected"
-                        : "option"
-                    }
-                  >
-                    <input
-                      type="radio"
-                      name={question.id}
-                      checked={answers[question.id] === option.id}
-                      onChange={() => selectAnswer(question.id, option.id)}
-                    />
-                    <span>{option.text}</span>
-                  </label>
-                ))}
-              </div>
-            </article>
-          ))}
-        </div>
+          <div className="options">
+            {currentQuestion.options.map((option) => (
+              <label
+                key={option.id}
+                className={answers[currentQuestion.id] === option.id ? "option selected" : "option"}
+              >
+                <input
+                  type="radio"
+                  name={currentQuestion.id}
+                  checked={answers[currentQuestion.id] === option.id}
+                  onChange={() => selectAnswer(currentQuestion.id, option.id)}
+                />
+                <span className="option-letter">{option.id.toUpperCase()}</span>
+                <span>{option.text}</span>
+              </label>
+            ))}
+          </div>
 
-        <button type="button" onClick={submitQuiz}>
-          Submit diagnostic
-        </button>
+          {navigationMessage && (
+            <p className="navigation-message" role="status">{navigationMessage}</p>
+          )}
+
+          <div className="question-navigation">
+            <button
+              type="button"
+              className="secondary navigation-button"
+              onClick={goPrevious}
+              disabled={isFirstQuestion}
+            >
+              Previous
+            </button>
+
+            <span className="question-position">
+              {currentQuestionIndex + 1} / {questions.length}
+            </span>
+
+            {isLastQuestion ? (
+              <button type="button" className="navigation-button" onClick={submitQuiz}>
+                Submit diagnostic
+              </button>
+            ) : (
+              <button type="button" className="navigation-button" onClick={goNext}>
+                Next question
+              </button>
+            )}
+          </div>
+        </article>
+
+        <p className="diagnostic-note">
+          Answers stay editable. Use Previous to revisit earlier questions before submitting.
+        </p>
       </section>
 
       <footer>20 original practice questions · No real exam questions used.</footer>
