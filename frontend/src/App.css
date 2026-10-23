@@ -38,3 +38,20 @@ button.secondary { background: #172b44; border: 1px solid #355473; }
 .session { border-top: 1px solid #2c415d; padding-top: 14px; margin-top: 14px; }
 footer { margin-top: 34px; color: #71859f; font-size: .9rem; }
 @media (max-width: 640px) { main { width: min(100% - 20px, 1060px); padding-top: 32px; } .card { padding: 17px; } }
+
+.source-badge {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 6px 10px;
+  border: 1px solid #355473;
+  border-radius: 999px;
+  color: #79b8ff;
+  background: #0b1728;
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
